@@ -15,83 +15,81 @@ const App = () => {
     setMarkedText('');
   };
 
-  // TODO: Implement custom steganography function to encode text in the image
   const encodeText = (image, text) => {
-    const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-  img.src = image;
-
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.drawImage(img, 0, 0);
-
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels = imageData.data;
-
-  let textIndex = 0;
-  let bitIndex = 0;
-
-  for (let i = 0; i < pixels.length; i += 4) {
-    if (textIndex >= text.length) {
-      break;
-    }
-
-    const charCode = text.charCodeAt(textIndex);
-    const bit = (charCode >> bitIndex) & 1;
-
-    pixels[i] = (pixels[i] & 0xFE) | bit;
-
-    bitIndex++;
-
-    if (bitIndex === 8) {
-      textIndex++;
-      bitIndex = 0;
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-  return canvas.toDataURL(); // Return the steganographed image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = image;
+    
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+    
+      let textIndex = 0;
+      let bitIndex = 0;
+    
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (textIndex >= text.length) {
+          break;
+        }
+    
+        const charCode = text.charCodeAt(textIndex);
+        const bit = (charCode >> bitIndex) & 1;
+    
+        pixels[i] = (pixels[i] & 0xFE) | bit;
+    
+        bitIndex++;
+    
+        if (bitIndex === 8) {
+          textIndex++;
+          bitIndex = 0;
+        }
+      }
+    
+      ctx.putImageData(imageData, 0, 0);
+      return canvas.toDataURL(); 
   };
 
-  // TODO: Implement custom steganography function to decode text from the image
   const decodeText = (image) => {
-    const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-  img.src = image;
-
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.drawImage(img, 0, 0);
-
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels = imageData.data;
-
-  let decodedText = '';
-  let charCode = 0;
-  let bitIndex = 0;
-
-  for (let i = 0; i < pixels.length; i += 4) {
-    const bit = pixels[i] & 1;
-    charCode |= bit << bitIndex;
-
-    bitIndex++;
-
-    if (bitIndex === 8) {
-      if (charCode === 0) {
-        break;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = image;
+    
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+    
+      let decodedText = '';
+      let charCode = 0;
+      let bitIndex = 0;
+    
+      for (let i = 0; i < pixels.length; i += 4) {
+        const bit = pixels[i] & 1;
+        charCode |= bit << bitIndex;
+    
+        bitIndex++;
+    
+        if (bitIndex === 8) {
+          if (charCode === 0) {
+            break;
+          }
+    
+          const decodedChar = String.fromCharCode(charCode);
+          decodedText += decodedChar;
+    
+          charCode = 0;
+          bitIndex = 0;
+        }
       }
 
-      const decodedChar = String.fromCharCode(charCode);
-      decodedText += decodedChar;
-
-      charCode = 0;
-      bitIndex = 0;
-    }
-  }
-
-  return decodedText;
+      return decodedText;;
   };
 
   const handleTextChange = (event) => {
@@ -142,14 +140,18 @@ const App = () => {
             value={markedText}
             onChange={handleTextChange}
           />
-          <button onClick={handleButtonClick}>Conceal Text</button>
+          <button onClick={handleButtonClick}>
+            {selectedImage ? 'Conceal Text' : 'Select Image'}
+          </button>
         </>
       )}
       {mode === 'check' && (
         <>
           <br />
           <input type="text" value={markedText} readOnly />
-          <button onClick={handleButtonClick}>Retrieve Text</button>
+          <button onClick={handleButtonClick}>
+            {selectedImage ? 'Retrieve Text' : 'Select Image'}
+          </button>
         </>
       )}
     </div>
